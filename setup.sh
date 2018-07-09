@@ -20,7 +20,7 @@ function removeKernelParam() {
 }
 
 function setGrubTimeout() {
-    sudo sed -i "s/^GRUB_TIMEOUT=[0-9]+/GRUB_TIMEOUT=$1 /" "$GRUB_CFG_PATH"
+    sudo sed -i -r "s/^GRUB_TIMEOUT=[0-9]+/GRUB_TIMEOUT=$1 /" "$GRUB_CFG_PATH"
 }
 
 function gnomeEnableAutoLogin() {
