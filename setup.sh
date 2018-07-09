@@ -19,6 +19,10 @@ function removeKernelParam() {
     fi
 }
 
+function setGrubTimeout() {
+    sudo sed -i "s/^GRUB_TIMEOUT=[0-9]+/GRUB_TIMEOUT=$1 /" "$GRUB_CFG_PATH"
+}
+
 function gnomeEnableAutoLogin() {
     sudo crudini --set /etc/gdm/custom.conf daemon AutomaticLoginEnable True
     sudo crudini --set /etc/gdm/custom.conf daemon AutomaticLogin $USER
@@ -66,6 +70,9 @@ addKernelParam "amd_iommu=on"
 addKernelParam "rd.driver.pre=vfio-pci"
 addKernelParam "intel_iommu=on"
 
+echo "Reduce grub timeout to 1 sec to reduce boot time"
+setGrubTimeout 1
+
 echo "Do something with the initial RAM disk because something vfio..."
 sudo dracut -f --kver `uname -r`
 
@@ -86,7 +93,7 @@ echo "Name=GPU pass-through check" >> $HOME/.config/autostart/gpu-pass-through-c
 echo "Exec=$HOME/autostart.sh" >> $HOME/.config/autostart/gpu-pass-through-check.desktop
 echo "Terminal=true" >> $HOME/.config/autostart/gpu-pass-through-check.desktop
 echo "Type=Application" >> $HOME/.config/autostart/gpu-pass-through-check.desktop
-chmod +x $HOME/.config/agsettings set org.gnome.desktop.session idle-delay utostart/gpu-pass-through-check.desktop
+chmod +x $HOME/.config/autostart/gpu-pass-through-check.desktop
 gio set $HOME/.config/autostart/gpu-pass-through-check.desktop "metadata::trusted" yes
 
 
