@@ -49,9 +49,11 @@ function disablePasswordlessSudo() {
 echo "Allow sudo to be used without a password for the current user..."
 enablePasswordlessSudo
 
-echo "Install tools that will come in handy"
+echo "Updating software..."
 sudo dnf update -y
+echo "Install soem useful tools..."
 sudo dnf install -y vim screen git crudini
+echo "Install virtualization software..."
 sudo dnf install -y @virtualization
 
 echo "Add kernel parameters to enable iommu on Intel/AMD CPUs"
