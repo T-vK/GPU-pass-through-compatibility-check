@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # Enable these to mock the lshw output and iommu groups of other computers for testing purposes
-#LSHW_MOCK=./mock-data/2-lshw
-#LSIOMMU_MOCK=./mock-data/2-lsiommu
+#LSHW_MOCK=./mock-data/1-lshw
+#LSIOMMU_MOCK=./mock-data/1-lsiommu
 
 if [ -z ${LSHW_MOCK+x} ]; then
     GPU_IDS=($(sudo lshw -class display | grep "bus info" | cut -d ":" -f 3-))
@@ -28,11 +28,11 @@ for GPU_ID in "${GPU_IDS[@]}"; do
     if [ "$GPU_IOMMU_GROUP" == "" ] ; then
         echo "Error: Failed to find the IOMMU group of the GPU with the ID $GPU_ID! Have you enabled iommu in the UEFI and kernel?"
     else
-        echo "GPU ID: $GPU_ID - GPU IOMMU group: GPU_IOMMU_GROUP"
+        echo "GPU ID: $GPU_ID - GPU IOMMU group: $GPU_IOMMU_GROUP"
         if [ -z ${LSIOMMU_MOCK+x} ]; then
-            OTHER_DEVICES_IN_GPU_GROUP=$(./lsiommu.sh | grep "IOMMU Group 13" | grep -v $GPU_ID | grep -v " Audio device ")
+            OTHER_DEVICES_IN_GPU_GROUP=$(./lsiommu.sh | grep "IOMMU Group $GPU_IOMMU_GROUP" | grep -v $GPU_ID | grep -v " Audio device ")
         else
-            OTHER_DEVICES_IN_GPU_GROUP=$(cat "$LSIOMMU_MOCK" | grep "IOMMU Group 13" | grep -v $GPU_ID | grep -v " Audio device ")
+            OTHER_DEVICES_IN_GPU_GROUP=$(cat "$LSIOMMU_MOCK" | grep "IOMMU Group $GPU_IOMMU_GROUP" | grep -v $GPU_ID | grep -v " Audio device ")
         fi
         if [ "$OTHER_DEVICES_IN_GPU_GROUP" == "" ] ; then
             echo "Success: GPU with ID '$GPU_ID' could be passed through to a virtual machine!"
