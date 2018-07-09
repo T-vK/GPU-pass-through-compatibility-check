@@ -55,7 +55,7 @@ gsettings set org.gnome.desktop.session idle-delay 0
 
 echo "Updating software..."
 sudo dnf update -y
-echo "Install soem useful tools..."
+echo "Install some useful tools..."
 sudo dnf install -y vim screen git crudini
 echo "Install virtualization software..."
 sudo dnf install -y @virtualization
