@@ -1,0 +1,12 @@
+*-display                 
+       description: VGA compatible controller
+       product: Oland PRO [Radeon R7 240/340]
+       vendor: Advanced Micro Devices, Inc. [AMD/ATI]
+       physical id: 0
+       bus info: pci@0000:23:00.0
+       version: 00
+       width: 64 bits
+       clock: 33MHz
+       capabilities: pm pciexpress msi vga_controller bus_master cap_list rom
+       configuration: driver=radeon latency=0
+resources: irq:54 memory:e0000000-efffffff memory:fe900000-fe93ffff ioport:e000(size=256) memory:c0000-dffff
