@@ -46,34 +46,34 @@ function disablePasswordlessSudo() {
     fi
 }
 
-# Allow sudo to be used without a password for the current user
+echo "Allow sudo to be used without a password for the current user..."
 enablePasswordlessSudo
 
-# Install to tools that will come in handy
+echo "Install tools that will come in handy"
 sudo dnf update -y
 sudo dnf install -y vim screen git crudini
 sudo dnf install -y @virtualization
 
-# Add kernel parameters to enable iommu on Intel/AMD CPUs
+echo "Add kernel parameters to enable iommu on Intel/AMD CPUs"
 addKernelParam "iommu=1"
 addKernelParam "amd_iommu=on"
 addKernelParam "rd.driver.pre=vfio-pci"
 addKernelParam "intel_iommu=on"
 
-# Do something with the initial RAM disk because something vfio...
+echo "Do something with the initial RAM disk because something vfio..."
 sudo dracut -f --kver `uname -r`
 
-# Apply the kernel parameter changes
+echo "Apply the kernel parameter changes"
 sudo sh -c 'grub2-mkconfig > /etc/grub2-efi.cfg'
 
-# Disable the login screen directly after booting
+echo "Disable the login screen directly after booting"
 gnomeEnableAutologin
 
-# Download autostart script
-curl -O https://github.com/T-vK/GPU-pass-through-compatibility-check/autostart.sh
+echo "Download autostart script..."
+curl -O https://raw.githubusercontent.com/T-vK/GPU-pass-through-compatibility-check/master/autostart.sh
 chmod +x autostart.sh
 
-# Configure autostart script to start when logged in after boot
+echo "Configure autostart script to start when logged in after boot"
 mkdir -p $HOME/.config/autostart
 echo "[Desktop Entry]" > $HOME/.config/autostart/gpu-pass-through-check.desktop
 echo "Name=GPU pass-through check" >> $HOME/.config/autostart/gpu-pass-through-check.desktop
