@@ -9,7 +9,7 @@ This project contains instructions on how to create a bootable Linux USB stick t
 - [x] if it works: write a script to automatically add the kernel parameters to the system
 - [x] install basic tools like git in the script which might come in handy
 - [x] install virtualization software using the script
-- [ ] find a way to skip the login screen and automatically run a bash script with root privileges that:
+- [x] find a way to skip the login screen and automatically run a bash script with root privileges that:
 - [ ] automatically checks if the iommu groups setup would work for GPU pass-trough 
 - [ ] automatically finds out the GPU is connected to the screen and the external outputs (MUX-less, MUXED etc.)
 - [ ] automatically verifies that it works by actually booting a VM and passing the GPU through to it.
