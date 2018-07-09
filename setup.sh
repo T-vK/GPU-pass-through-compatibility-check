@@ -49,6 +49,10 @@ function disablePasswordlessSudo() {
 echo "Allow sudo to be used without a password for the current user..."
 enablePasswordlessSudo
 
+echo "Disable lock screen and screen blackout"
+gsettings set org.gnome.desktop.screensaver lock-enabled false
+gsettings set org.gnome.desktop.session idle-delay 0
+
 echo "Updating software..."
 sudo dnf update -y
 echo "Install soem useful tools..."
@@ -69,7 +73,7 @@ echo "Apply the kernel parameter changes"
 sudo sh -c 'grub2-mkconfig > /etc/grub2-efi.cfg'
 
 echo "Disable the login screen directly after booting"
-gnomeEnableAutologin
+gnomeEnableAutoLogin
 
 echo "Download autostart script..."
 curl -O https://raw.githubusercontent.com/T-vK/GPU-pass-through-compatibility-check/master/autostart.sh
@@ -82,6 +86,7 @@ echo "Name=GPU pass-through check" >> $HOME/.config/autostart/gpu-pass-through-c
 echo "Exec=$HOME/autostart.sh" >> $HOME/.config/autostart/gpu-pass-through-check.desktop
 echo "Terminal=true" >> $HOME/.config/autostart/gpu-pass-through-check.desktop
 echo "Type=Application" >> $HOME/.config/autostart/gpu-pass-through-check.desktop
-chmod +x $HOME/.config/autostart/gpu-pass-through-check.desktop
+chmod +x $HOME/.config/agsettings set org.gnome.desktop.session idle-delay utostart/gpu-pass-through-check.desktop
 gio set $HOME/.config/autostart/gpu-pass-through-check.desktop "metadata::trusted" yes
+
 
