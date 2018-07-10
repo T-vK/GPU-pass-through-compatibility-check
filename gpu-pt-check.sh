@@ -34,7 +34,7 @@ function log_orange() {
 }
 
 # Check if UEFI is configured correctly
-if grep flags /proc/cpuinfo | head -n1|grep --quiet -Eo '(vmx|svm)' ; then
+if systool -m kvm_intel -v &> /dev/null || systool -m kvm_amd -v &> /dev/null ; then
     UEFI_VIRTUALIZATION_ENABLED=true
     log_green "[OK] VT-X / AMD-V virtualization is enabled in the UEFI."
 else
