@@ -73,7 +73,7 @@ for GPU_ID in "${GPU_IDS[@]}"; do
     if [ "$GPU_IOMMU_GROUP" == "" ] ; then
         log_red "[Error] Failed to find the IOMMU group of the GPU with the ID $GPU_ID! Have you enabled iommu in the UEFI and kernel?"
     else
-        OTHER_DEVICES_IN_GPU_GROUP=$(echo "$IOMMU_GROUPS" | grep "IOMMU Group $GPU_IOMMU_GROUP " | grep -v $GPU_ID | grep -v " Audio device " | grep -v " PCI brigde ")
+        OTHER_DEVICES_IN_GPU_GROUP=$(echo "$IOMMU_GROUPS" | grep "IOMMU Group $GPU_IOMMU_GROUP " | grep -v $GPU_ID | grep -v " Audio device " | grep -v " PCI bridge ")
         if [ "$OTHER_DEVICES_IN_GPU_GROUP" == "" ] ; then
             log_green "[Success] GPU with ID '$GPU_ID' could be passed through to a virtual machine!"
             GOOD_GPUS+=("$GPU_ID")
