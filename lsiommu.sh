@@ -1,6 +1,5 @@
 #!/bin/bash
 
-echo "Listing IOMMU Groups..."
 shopt -s nullglob
 for d in /sys/kernel/iommu_groups/*/devices/*; do
     n=${d#*/iommu_groups/*}; n=${n%%/*}

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-export GRUB_CFG_PATH=/etc/default/grub
+GRUB_CFG_PATH=/etc/default/grub
 
 function addKernelParam() {
     if ! sudo cat "$GRUB_CFG_PATH" | grep "GRUB_CMDLINE_LINUX=" | grep --quiet "$1"; then

@@ -1,11 +1,12 @@
 #!/bin/bash
+DIR=$(cd "$(dirname "$0")"; pwd)
 
 # Enable these to mock the lshw output and iommu groups of other computers for testing purposes
-#LSHW_MOCK=./mock-data/3-lshw
-#LSIOMMU_MOCK=./mock-data/3-lsiommu
+#LSHW_MOCK="$DIR/mock-data/3-lshw"
+#LSIOMMU_MOCK="$DIR/mock-data/3-lsiommu"
 
 if [ -z ${LSIOMMU_MOCK+x} ]; then
-    IOMMU_GROUPS=$(./lsiommu.sh)
+    IOMMU_GROUPS=$("$DIR/lsiommu.sh")
 else
     IOMMU_GROUPS=$(cat "$LSIOMMU_MOCK")
 fi
@@ -49,7 +50,7 @@ else
     log_red "[Error] IOMMU / VT-D is not enabled in the UEFI!"
 fi
 
-# Check if kernel is confirgured correctly
+# Check if kernel is configured correctly
 if cat /proc/cmdline | grep --quiet iommu ; then
     log_green "[OK] The IOMMU kernel parameters seem to be set."
 else
@@ -122,7 +123,7 @@ done <<< "$GPU_LIST"
 echo ""
 
 #echo "Listing IOMMU Groups..."
-#./lsiommu.sh
+#$DIR/lsiommu.sh
 
 #echo "Listing GPU info with lshw..."
 #sudo lshw -class display
