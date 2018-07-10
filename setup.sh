@@ -95,10 +95,10 @@ AUTOSTART_SCRIPT=$(cd "$(dirname "$0")"; pwd)/gpu-pt-check.sh
 mkdir -p $HOME/.config/autostart
 echo "[Desktop Entry]" > $HOME/.config/autostart/gpu-pass-through-check.desktop
 echo "Name=GPU pass-through check" >> $HOME/.config/autostart/gpu-pass-through-check.desktop
-echo "Exec="$AUTOSTART_SCRIPT" >> $HOME/.config/autostart/gpu-pass-through-check.desktop
+echo "Exec=$AUTOSTART_SCRIPT" >> $HOME/.config/autostart/gpu-pass-through-check.desktop
 echo "Terminal=true" >> $HOME/.config/autostart/gpu-pass-through-check.desktop
 echo "Type=Application" >> $HOME/.config/autostart/gpu-pass-through-check.desktop
 chmod +x $HOME/.config/autostart/gpu-pass-through-check.desktop
 gio set $HOME/.config/autostart/gpu-pass-through-check.desktop "metadata::trusted" yes
 
-
+echo "You should reboot now!"
