@@ -47,9 +47,7 @@ Alternatively you can create a VM with a UEFI firmare (in virtual machine manage
 Now to add the setup script to the USB stick, simply boot from the USB stick (either using the VM (you should remove the virtual CD drive frist, so that it won't boot from the iso again) or boot from it directly (in EFI / UEFI ... mode!)). Then run the following commands to download the setup script and execute it with root privileges:
 
 ```
-sudo dnf install -y git && git clone https://github.com/T-vK/GPU-pass-through-compatibility-check.git
-cd GPU-pass-through-compatibility-check
-sudo ./setup.sh
+sudo dnf install -y git && git clone https://github.com/T-vK/GPU-pass-through-compatibility-check.git && sudo ./GPU-pass-through-compatibility-check/setup.sh
 ```
 
 ## Usage
