@@ -1,24 +1,4 @@
-  *-display                 
-       description: VGA compatible controller
-       product: Ellesmere [Radeon RX 470/480/570/570X/580/580X]
-       vendor: Advanced Micro Devices, Inc. [AMD/ATI]
-       physical id: 0
-       bus info: pci@0000:26:00.0
-       version: e7
-       width: 64 bits
-       clock: 33MHz
-       capabilities: pm pciexpress msi vga_controller bus_master cap_list rom
-       configuration: driver=amdgpu latency=0
-       resources: irq:41 memory:e0000000-efffffff memory:f0000000-f01fffff ioport:e000(size=256) memory:fe800000-fe83ffff memory:c0000-dffff
-  *-display
-       description: VGA compatible controller
-       product: Ellesmere [Radeon RX 470/480/570/570X/580/580X]
-       vendor: Advanced Micro Devices, Inc. [AMD/ATI]
-       physical id: 0
-       bus info: pci@0000:27:00.0
-       version: e7
-       width: 64 bits
-       clock: 33MHz
-       capabilities: pm pciexpress msi vga_controller bus_master cap_list rom
-       configuration: driver=amdgpu latency=0
-       resources: irq:43 memory:c0000000-cfffffff memory:d0000000-d01fffff ioport:d000(size=256) memory:fe700000-fe73ffff memory:fe740000-fe75ffff
+  Bus info          Device      Class       Description
+=====================================================
+pci@0000:26:00.0              display     Ellesmere [Radeon RX 470/480/570/570X/580/580X]
+pci@0000:27:00.0              display     Ellesmere [Radeon RX 470/480/570/570X/580/580X]

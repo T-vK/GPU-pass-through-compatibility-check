@@ -65,10 +65,14 @@ echo "Install virtualization software..."
 sudo dnf install -y @virtualization
 
 echo "Add kernel parameters to enable iommu on Intel/AMD CPUs"
-addKernelParam "iommu=1"
-addKernelParam "amd_iommu=on"
-addKernelParam "rd.driver.pre=vfio-pci"
-addKernelParam "intel_iommu=on"
+# Docs: https://www.kernel.org/doc/Documentation/admin-guide/kernel-parameters.txt
+# More docs: https://lwn.net/Articles/252826/
+# https://www.kernel.org/doc/Documentation/x86/x86_64/boot-options.txt
+addKernelParam "iommu=1" # '1' is not a documented option. stop confusing me wendell! Maybe the "force" option should be used instead?
+addKernelParam "amd_iommu=on" # 'on' is not a docuemnted option for this parameter either! This is insanely confusing!
+addKernelParam "intel_iommu=on" # enable Intel VT-D
+addKernelParam "rd.driver.pre=vfio-pci" # tell dracut to load vfio-pci first
+# addKernelParam "i915.preliminary_hw_support=1" # add skylake support; probably only necessary with older kernels
 
 echo "Reduce grub timeout to 1 sec to reduce boot time"
 setGrubTimeout 1
