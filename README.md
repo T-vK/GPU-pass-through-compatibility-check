@@ -1,7 +1,12 @@
 # GPU-pass-through-compatibility-check
 
 ## Introduction
-This project contains instructions on how to create a bootable Linux USB stick that automatically checks to what extend a computer is compatible with GPU pass-through. This project has primarely be created to check notebooks. It will probably also work on desktop computers, but checking how and if the conenction between the GPU and the display is MUXED wouldn't make much sense on a desktop computer.
+This project consists of 3 parts. 
+1. A script (`gpu-pt-check.sh`) that automatically checks to what extend a computer is compatible with GPU pass-through in its given configuration.
+2. A script (`setup.sh`) that automatically installs and configures your system for GPU pass-through (Only tested on fresh installs of Fedora 28 x64 with Gnome, booted in UEFI mode!)
+3. Instructions on how to create a bootable Linux USB stick that automatically runs the `gpu-pt-check.sh` script when you boot from it without any user interaction required.
+
+This project has primarely be created to check notebooks. It will probably also work on desktop computers, but checking how and if the conenction between the GPU and the display is MUXED (and if so how) wouldn't make much sense on a desktop computer.
 
 ## TODO
 - [x] Instructions on creating a bootable Linux stick with persistent storage, UEFI compability and a recent kernel (4.17+)
@@ -10,11 +15,13 @@ This project contains instructions on how to create a bootable Linux USB stick t
 - [x] install basic tools like git in the script which might come in handy
 - [x] install virtualization software using the script
 - [x] find a way to skip the login screen and automatically run a bash script with root privileges that:
-- [x] automatically checks if the iommu groups setup would work for GPU pass-trough
-- [ ] automatically finds out the GPU is connected to the screen and the external outputs (MUX-less, MUXED etc.)
-- [ ] automatically verifies that it works by actually booting a VM and passing the GPU through to it.
-- [ ] Add login to detect if the kernel parameters are set
-- [ ] Add logic to check if the virtualization technologies have been ebaled in the UEFI (possiby using rdmsr?)
+- [x] checks if AMD-V / VT-X is enabled
+- [x] checks if AMD's IOMMU / Intels VT-D is enabled
+- [x] checks if the IOMMU kernel parameters are set
+- [x] checks for every GPU if it could be passed through to a VM or if other devices in the same IOMMU group would prevent that
+- [ ] finds out the GPU is connected to the screen and the external outputs (MUX-less, MUXED etc.)
+- [ ] verifies that it works by actually booting a VM and passing the GPU through to it.
+- [ ] the VM should be used with looking glass
 
 ## Prerequisites
 
@@ -33,15 +40,15 @@ Then you need to boot from it in EFI / UEFI / non-BIOS mode. Usually when you op
 Then you wait for it to boot up and follow the instructions to install Fedora on the Fedora stick.
 
 #### Installing Fedora using a virtual machine
-Alternatively you can create a VM with a UEFI firmare (in virtual machine manager: [1](screenshots/vm-advanced-config.png), [2](screenshots/vm-uefi.png)) and pass the Fedora stick through to it (in virtual machine manager: [3](screenshots/vm-usb-pass-through.png)) and tell the VM to boot from the Fedora iso image directly. You don't need a storage device (vhd)! Then you simply boot the VM (make sure it boots from the iso image and follow the instructions to install Fedora on the Fedora stick.
+Alternatively you can create a VM with a UEFI firmare (in virtual machine manager: [screenshot 1](screenshots/vm-advanced-config.png), [screenshot 2](screenshots/vm-uefi.png)) and pass the Fedora stick through to it (in virtual machine manager: [screenshot 3](screenshots/vm-usb-pass-through.png)) and tell the VM to boot from the Fedora iso image directly. You don't need a storage device (vhd)! Then you simply boot the VM (make sure it boots from the iso image and follow the instructions to install Fedora on the Fedora stick.
 
 ### Adding the setup script.
 
 Now to add the setup script to the USB stick, simply boot from the USB stick (either using the VM (you should remove the virtual CD drive frist, so that it won't boot from the iso again) or boot from it directly (in EFI / UEFI ... mode!)). Then run the following commands to download the setup script and execute it with root privileges:
 
 ```
-curl -O https://raw.githubusercontent.com/T-vK/GPU-pass-through-compatibility-check/master/setup.sh
-chmod +x ./setup.sh
+sudo dnf install -y git && git clone https://github.com/T-vK/GPU-pass-through-compatibility-check.git
+cd GPU-pass-through-compatibility-check
 sudo ./setup.sh
 ```
 
@@ -52,4 +59,4 @@ sudo ./setup.sh
 - You might also have to disable secure boot in the UEFI.
 - It might also be necessary to disable fastboot in the UEFI.
 - Once you saved the settings and rebooted, enter the boot menu (usually with Esc, F1-F12 or Del) and boot your Fedora stick in EFI / UEFI / non-BIOS mode.
-- Finally when it boots the rest should happen automatically. (Work in progress. This will not work atm.)
+- Finally when it boots the rest should happen automatically. (It will automatically log you in and start `gpu-pt-check.sh`.)

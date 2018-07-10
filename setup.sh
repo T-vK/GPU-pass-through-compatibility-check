@@ -91,10 +91,11 @@ curl -O https://raw.githubusercontent.com/T-vK/GPU-pass-through-compatibility-ch
 chmod +x autostart.sh
 
 echo "Configure autostart script to start when logged in after boot"
+AUTOSTART_SCRIPT=$(cd "$(dirname "$0")"; pwd)/gpu-pt-check.sh
 mkdir -p $HOME/.config/autostart
 echo "[Desktop Entry]" > $HOME/.config/autostart/gpu-pass-through-check.desktop
 echo "Name=GPU pass-through check" >> $HOME/.config/autostart/gpu-pass-through-check.desktop
-echo "Exec=$HOME/autostart.sh" >> $HOME/.config/autostart/gpu-pass-through-check.desktop
+echo "Exec="$AUTOSTART_SCRIPT" >> $HOME/.config/autostart/gpu-pass-through-check.desktop
 echo "Terminal=true" >> $HOME/.config/autostart/gpu-pass-through-check.desktop
 echo "Type=Application" >> $HOME/.config/autostart/gpu-pass-through-check.desktop
 chmod +x $HOME/.config/autostart/gpu-pass-through-check.desktop
