@@ -73,14 +73,14 @@ for GPU_ID in "${GPU_IDS[@]}"; do
     if [ "$GPU_IOMMU_GROUP" == "" ] ; then
         log_red "[Error] Failed to find the IOMMU group of the GPU with the ID $GPU_ID! Have you enabled iommu in the UEFI and kernel?"
     else
-        OTHER_DEVICES_IN_GPU_GROUP=$(echo "$IOMMU_GROUPS" | grep "IOMMU Group $GPU_IOMMU_GROUP " | grep -v $GPU_ID | grep -v " Audio device ")
+        OTHER_DEVICES_IN_GPU_GROUP=$(echo "$IOMMU_GROUPS" | grep "IOMMU Group $GPU_IOMMU_GROUP " | grep -v $GPU_ID | grep -v " Audio device " | grep -v " PCI brigde ")
         if [ "$OTHER_DEVICES_IN_GPU_GROUP" == "" ] ; then
             log_green "[Success] GPU with ID '$GPU_ID' could be passed through to a virtual machine!"
             GOOD_GPUS+=("$GPU_ID")
         else
             log_orange "[Problem] Other devices have been found in the IOMMU group of the GPU with the ID '$GPU_ID'. Depending on the devices, this could make GPU pass-through impossible to pass this GPU through to a virtual machine!"
             log_orange "The devices found in this GPU's IOMMU Group are:"
-            log_orange "$OTHER_DEVICES_IN_GPU_GROUP"
+            log_red "$OTHER_DEVICES_IN_GPU_GROUP"
             echo "[Info] It might be possible to get it to work by putting the devices in different slots on the motherboard and or by using the ACS override patch. Otherwise you'll probably have to get a different motherboard. If you're on a laptop, there is nothing you can do as far as I'm aware. Although it would theoretically be possible for ACS support for laptops to exist. TODO: Find a way to check if the current machine has support for that."
             BAD_GPUS+=("$GPU_ID")
         fi
