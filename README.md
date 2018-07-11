@@ -19,9 +19,11 @@ This project has primarely be created to check notebooks. It will probably also 
 - [x] checks if AMD's IOMMU / Intels VT-D is enabled
 - [x] checks if the IOMMU kernel parameters are set
 - [x] checks for every GPU if it could be passed through to a VM or if other devices in the same IOMMU group would prevent that
-- [ ] finds out the GPU is connected to the screen and the external outputs (MUX-less, MUXED etc.)
+- [ ] provides inforamtion about which USB devices are connected to USB controllers that is in the IOMMU group of a GPU
+- [x] finds out the GPU is connected to the screen and the external outputs (MUX-less, MUXED etc.)
 - [ ] verifies that it works by actually booting a VM and passing the GPU through to it.
 - [ ] the VM should be used with looking glass
+- [ ] Verify if the MUX detection works
 
 ## Prerequisites
 
