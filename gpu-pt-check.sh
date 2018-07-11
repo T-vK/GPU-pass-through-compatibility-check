@@ -59,12 +59,6 @@ fi
 
 GPU_IDS=($(echo "$GPU_INFO" | grep "pci@" | cut -d " " -f 1 | cut -d ":" -f 2-))
 
-if [ "${#GPU_IDS[@]}" == "0" ] ; then
-    log_red "[Error] Failed to find any GPUs! Assuning this is correct, GPU pass-through is obviously impossible."
-elif [ "${#GPU_IDS[@]}" == "1" ] ; then
-    log_orange "[Warning] Only 1 GPU found! (Counting all GPUs, not just dedicated ones.) This would make GPU pass-thruogh difficult because your host machine would be left without a GPU!"
-fi
-
 GOOD_GPUS=()
 BAD_GPUS=()
 for GPU_ID in "${GPU_IDS[@]}"; do
@@ -110,7 +104,11 @@ for GPU_ID in "${GOOD_GPUS[@]}"; do
 done
 
 if [ "${#GOOD_GPUS[@]}" == "0" ] ; then
-    log_red "[Warning] This script was not able to identify a GPU in this that could be passed through to a VM!"
+    if [ "${#GPU_IDS[@]}" == "0" ] ; then
+        log_red "[Warning] Failed to find any GPUs! Assuning this is correct, GPU pass-through is obviously impossible on this system in the current configuration!"
+    else
+        log_red "[Warning] This script was not able to identify a GPU in this that could be passed through to a VM!"
+    fi
 else
     log_green "[Success] There are ${#GOOD_GPUS[@]} GPU(s) in this system that could be passed through to a VM!"
 
@@ -126,8 +124,21 @@ else
         fi
     done <<< "$GPU_LIST"
     echo ""
+    
+    if [ ${#GOOD_GPUS[@]} != 1 ] && grep -qE '^([0-9]+)( \1)*$' <<< $(echo $(echo "$IOMMU_GROUPS" | grep -E $(echo "${GOOD_GPUS[@]}" | tr ' ' '|') | cut -d " " -f 3)) ; then
+        if [ ${#BAD_GPUS[@]} == 0 ] ; then
+            log_orange "[Warning] All GPUs in this system are in the same IOMMU group. This would make GPU pass-through difficult (not impossible) because your host machine would be left without a GPU!"
+        else
+            log_green "[Warning] Some of your GPUs are in the same IOMMU group. This means they could only be passed through together. You could still use a GPU that's in another group for your host system. (E.g. the one with the PCI adress 'pci@0000:'${BAD_GPUS[0]} "
+        fi
+    else
+        if [ "${#GPU_IDS[@]}" == "1" ] ; then
+            log_orange "[Warning] Only 1 GPU found! (Counting all GPUs, not just dedicated ones.) This would make GPU pass-thruogh difficult (not impossible) because your host machine would be left without a GPU!"
+        else
+            log_green "[Perfect] You have GPUs that are not in the same IOMMU group. At least one of these could be passed through to a VM and at least one of the remaining ones could be used for the host system."
+        fi
+    fi
 fi
-
 #echo "Listing IOMMU Groups..."
 #$DIR/lsiommu.sh
 
