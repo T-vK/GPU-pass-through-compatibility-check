@@ -27,6 +27,7 @@ This project has primarely be created to check notebooks. It will probably also 
 - [x] detects BIOS version
 - [ ] verifies that it works by actually booting a VM and passing the GPU through to it.
 - [ ] Verify if the MUX detection works
+- [ ] Add logic to check if the iGPU is disabled in the UEFI
 - [ ] the VM should be used with looking glass
 
 ## Prerequisites
