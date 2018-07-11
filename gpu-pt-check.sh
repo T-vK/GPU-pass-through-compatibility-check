@@ -2,8 +2,8 @@
 DIR=$(cd "$(dirname "$0")"; pwd)
 
 # Enable these to mock the lshw output and iommu groups of other computers for testing purposes
-#LSHW_MOCK="$DIR/mock-data/3-lshw"
-#LSIOMMU_MOCK="$DIR/mock-data/3-lsiommu"
+LSHW_MOCK="$DIR/mock-data/3-lshw"
+LSIOMMU_MOCK="$DIR/mock-data/3-lsiommu"
 
 if [ -z ${LSIOMMU_MOCK+x} ]; then
     IOMMU_GROUPS=$("$DIR/lsiommu.sh")
@@ -39,7 +39,7 @@ if systool -m kvm_intel -v &> /dev/null || systool -m kvm_amd -v &> /dev/null ; 
     log_green "[OK] VT-X / AMD-V virtualization is enabled in the UEFI."
 else
     UEFI_VIRTUALIZATION_ENABLED=false
-    log_orange "[Warning] VT-X / AMD-V virtualization is not enabled in the UEFI!"
+    log_orange "[Warning] VT-X / AMD-V virtualization is not enabled in the UEFI! This is required to run virtual machines!"
 fi
 
 if [ "$IOMMU_GROUPS" != "" ] ; then 
@@ -47,22 +47,22 @@ if [ "$IOMMU_GROUPS" != "" ] ; then
     log_green "[OK] IOMMU / VT-D is enabled in the UEFI."
 else
     UEFI_IOMMU_ENABLED=false
-    log_red "[Error] IOMMU / VT-D is not enabled in the UEFI!"
+    log_red "[Error] IOMMU / VT-D is not enabled in the UEFI! This is required to check which devices are in which IOMMU group and to use GPU pass-through!"
 fi
 
 # Check if kernel is configured correctly
 if cat /proc/cmdline | grep --quiet iommu ; then
-    log_green "[OK] The IOMMU kernel parameters seem to be set."
+    log_green "[OK] The IOMMU kernel parameters are set."
 else
-    log_red "[Error] The iommu kernel parameters are missing!"
+    log_red "[Error] The iommu kernel parameters are missing! This is required to use GPU pass-through!"
 fi
 
 GPU_IDS=($(echo "$GPU_INFO" | grep "pci@" | cut -d " " -f 1 | cut -d ":" -f 2-))
 
 if [ "${#GPU_IDS[@]}" == "0" ] ; then
-    log_red "[Warning] Failed to find any GPUs!"
+    log_red "[Error] Failed to find any GPUs! Assuning this is correct, GPU pass-through is obviously impossible."
 elif [ "${#GPU_IDS[@]}" == "1" ] ; then
-    log_orange "[Warning] Only 1 GPU found! (Counting all GPUs, not just dedicated ones.)"
+    log_orange "[Warning] Only 1 GPU found! (Counting all GPUs, not just dedicated ones.) This would make GPU pass-thruogh difficult because your host machine would be left without a GPU!"
 fi
 
 GOOD_GPUS=()
@@ -74,10 +74,16 @@ for GPU_ID in "${GPU_IDS[@]}"; do
         log_red "[Error] Failed to find the IOMMU group of the GPU with the ID $GPU_ID! Have you enabled iommu in the UEFI and kernel?"
     else
         OTHER_DEVICES_IN_GPU_GROUP=$(echo "$IOMMU_GROUPS" | grep "IOMMU Group $GPU_IOMMU_GROUP " | grep -v $GPU_ID | grep -v " Audio device " | grep -v " PCI bridge ")
+        OTHER_DEVICES_IN_GPU_GROUP_NO_GPUS=$(echo $OTHER_DEVICES_IN_GPU_GROUP | grep -v " VGA compatible controller ")
+
         if [ "$OTHER_DEVICES_IN_GPU_GROUP" == "" ] ; then
             log_green "[Success] GPU with ID '$GPU_ID' could be passed through to a virtual machine!"
             GOOD_GPUS+=("$GPU_ID")
-        else
+        elif [ "$OTHER_DEVICES_IN_GPU_GROUP_NO_GPUS" = "" ] ; then
+            log_orange "[Warning] GPU with ID '$GPU_ID' could be passed through to a virtual machine, but only together with the following devices: "
+            log_orange "$OTHER_DEVICES_IN_GPU_GROUP"
+            GOOD_GPUS+=("$GPU_ID")
+        else 
             log_orange "[Problem] Other devices have been found in the IOMMU group of the GPU with the ID '$GPU_ID'. Depending on the devices, this could make GPU pass-through impossible to pass this GPU through to a virtual machine!"
             log_orange "The devices found in this GPU's IOMMU Group are:"
             log_red "$OTHER_DEVICES_IN_GPU_GROUP"
@@ -106,21 +112,21 @@ done
 if [ "${#GOOD_GPUS[@]}" == "0" ] ; then
     log_red "[Warning] This script was not able to identify a GPU in this that could be passed through to a VM!"
 else
-    log_green "[Success] There seems to be at least one GPU in this system that can be passed through to a VM!"
-fi
+    log_green "[Success] There are ${#GOOD_GPUS[@]} GPU(s) in this system that could be passed through to a VM!"
 
-echo ""
-GPU_LIST=$(echo -e "$GPU_LIST" | column -t -s'|')
-while read -r line; do
-    if echo "$line" | grep --quiet Yes ; then
-        log_green "$line"
-    elif echo "$line" | grep --quiet No ; then
-        log_red "$line"
-    else
-        log_orange "$line"
-    fi
-done <<< "$GPU_LIST"
-echo ""
+    echo ""
+    GPU_LIST=$(echo -e "$GPU_LIST" | column -t -s'|')
+    while read -r line; do
+        if echo "$line" | grep --quiet Yes ; then
+            log_green "$line"
+        elif echo "$line" | grep --quiet No ; then
+            log_red "$line"
+        else
+            log_orange "$line"
+        fi
+    done <<< "$GPU_LIST"
+    echo ""
+fi
 
 #echo "Listing IOMMU Groups..."
 #$DIR/lsiommu.sh
