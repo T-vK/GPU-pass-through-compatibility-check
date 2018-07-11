@@ -2,8 +2,8 @@
 DIR=$(cd "$(dirname "$0")"; pwd)
 
 # Enable these to mock the lshw output and iommu groups of other computers for testing purposes
-LSHW_MOCK="$DIR/mock-data/1-lshw"
-LSIOMMU_MOCK="$DIR/mock-data/1-lsiommu"
+#LSHW_MOCK="$DIR/mock-data/1-lshw"
+#LSIOMMU_MOCK="$DIR/mock-data/1-lsiommu"
 
 if [ -z ${LSIOMMU_MOCK+x} ]; then
     IOMMU_GROUPS=$("$DIR/lsiommu.sh")
