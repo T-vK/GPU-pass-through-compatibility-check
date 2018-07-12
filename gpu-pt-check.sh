@@ -2,8 +2,9 @@
 DIR=$(cd "$(dirname "$0")"; pwd)
 
 # Enable these to mock the lshw output and iommu groups of other computers for testing purposes
-#LSHW_MOCK="$DIR/mock-data/1-lshw"
-#LSIOMMU_MOCK="$DIR/mock-data/1-lsiommu"
+MOCK_SET=5
+LSHW_MOCK="$DIR/mock-data/$MOCK_SET-lshw"
+LSIOMMU_MOCK="$DIR/mock-data/$MOCK_SET-lsiommu"
 
 if [ -z ${LSIOMMU_MOCK+x} ]; then
     IOMMU_GROUPS=$("$DIR/lsiommu.sh")
@@ -43,6 +44,10 @@ function log_white() {
     echo -e "$@"
 }
 
+if [ -n ${MOCK_SET+x} ]; then
+    log_red "[Warning] Using mock data! The following output has nothing to do with this system!"
+fi
+
 # Check if UEFI is configured correctly
 if systool -m kvm_intel -v &> /dev/null || systool -m kvm_amd -v &> /dev/null ; then
     UEFI_VIRTUALIZATION_ENABLED=true
@@ -66,7 +71,7 @@ if cat /proc/cmdline | grep --quiet iommu ; then
     log_green "[OK] The IOMMU kernel parameters are set."
 else
     KERNEL_IOMMU_ENABLED=false
-    log_red "[Error] The iommu kernel parameters are missing! This is required to use GPU pass-through!"
+    log_red "[Error] The iommu kernel parameters are missing! You have to add them in roder to use GPU pass-through!"
 fi
 
 GPU_IDS=($(echo "$GPU_INFO" | grep "pci@" | cut -d " " -f 1 | cut -d ":" -f 2-))
@@ -160,7 +165,7 @@ fi
 
 
 # If the device is a laptop
-if [ "$(sudo dmidecode --string chassis-type)" == "Desktop" ] ; then
+#if [ "$(sudo dmidecode --string chassis-type)" != "Desktop" ] ; then
     DEVICE_NAME=$(sudo dmidecode -s system-product-name)
     BIOS_VERSION=$(sudo dmidecode -s bios-version)
     LOG_DIR="$DIR/logs/$DEVICE_NAME/$BIOS_VERSION"
@@ -171,9 +176,9 @@ if [ "$(sudo dmidecode --string chassis-type)" == "Desktop" ] ; then
     log_white "[Info] BIOS version: $BIOS_VERSION"
 
     if echo $IOMMU_GROUPS | grep --quiet " VGA compatible controller " ; then
-        log_green "[OK] This Laptop is probably MUXed. (The connection between the GPU(s) and the [internal display]/[display outputs] is multiplexed.)"
+        log_green "[OK] This system is probably MUXed. (The connection between the GPU(s) and the [internal display]/[display outputs] is multiplexed.)"
     else
-        log_orange "[Warning] This laptop is probably MUX-less. (The connection between the GPU(s) and the [internal display]/[display outputs] is not multiplexed.)"
+        log_orange "[Warning] This system is probably MUX-less. (The connection between the GPU(s) and the [internal display]/[display outputs] is not multiplexed.)"
     fi
 
     echo $DATE > "$LOG_DIR/date.log"
@@ -192,7 +197,7 @@ if [ "$(sudo dmidecode --string chassis-type)" == "Desktop" ] ; then
     sudo cat /proc/meminfo > "$LOG_DIR/meminfo.log"
     log_green "[OK] Logs have been created in $LOG_DIR"
     echo -e $LOG_OUTPUT > "$LOG_DIR/general.log"
-fi
+#fi
 
 if [ "$UEFI_VIRTUALIZATION_ENABLED" = true ] && [ "$UEFI_IOMMU_ENABLED" = true ]  && [ "$KERNEL_IOMMU_ENABLED" = true ] && [ "$IOMMU_COMPATIBILITY_LVL" -gt "0" ] ; then
     log_green "TODO: create a VM and pass a GPU through to it"
@@ -205,4 +210,8 @@ fi
 #echo "Listing GPU info with lshw..."
 #sudo lshw -class display
 
-$SHELL # This is just to keep the shell running when the script is automatically executed on startup.
+if [ -n ${MOCK_SET+x} ]; then
+    log_red "[Warning] Remember, the above output has been generated using the given mock data and has nothing to do with this system!"
+else
+    $SHELL # This is just to keep the shell running when the script is automatically executed on startup.
+fi

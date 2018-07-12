@@ -8,6 +8,10 @@ This project consists of 3 parts.
 
 This project has primarely be created to check notebooks. It will probably also work on desktop computers, but checking how and if the conenction between the GPU and the display is MUXED (and if so how) wouldn't make much sense on a desktop computer.
 
+## Screenshot
+![example output](screenshots/example-output.png)
+(The output does not represent an existing laptop. It's just an example ran using some mock data from a laptop on a desktop.)
+
 ## TODO
 - [x] Instructions on creating a bootable Linux stick with persistent storage, UEFI compability and a recent kernel (4.17+)
 - [x] check if Linux still boots if you add iommu kernel params for Intel and AMD at the same time
