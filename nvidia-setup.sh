@@ -23,24 +23,24 @@ function applyKernelParamChanges() {
 }
 
 
-#sudo dnf install fedora-workstation-repositories -y
+sudo dnf install fedora-workstation-repositories -y
 
-#sudo dnf config-manager rpmfusion-nonfree-nvidia-driver --set-enabled -y
+sudo dnf config-manager rpmfusion-nonfree-nvidia-driver --set-enabled -y
 
-#sudo dnf install akmod-nvidia acpi -y
+sudo dnf install akmod-nvidia acpi -y
 
-#sudo dnf copr enable chenxiaolong/bumblebee -y
+sudo dnf copr enable chenxiaolong/bumblebee -y
 
-#sudo dnf install akmod-bbswitch bumblebee primus -y
+sudo dnf install akmod-bbswitch bumblebee primus -y
 
-#sudo gpasswd -a $USER bumblebee
+sudo gpasswd -a $USER bumblebee
 
-#sudo systemctl enable bumblebeed
-#sudo systemctl mask nvidia-fallback
+sudo systemctl enable bumblebeed
+sudo systemctl mask nvidia-fallback
 
 
-removeKernelParam "acpi_osi=!"
-addKernelParam "acpi_osi='Windows 2009'"
-addKernelParam "nouveau.modeset=0"
+#addKernelParam "acpi_osi=!"
+#addKernelParam "acpi_osi='Windows 2009'"
+#addKernelParam "nouveau.modeset=0"
 
 applyKernelParamChanges
