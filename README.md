@@ -5,6 +5,7 @@ This project consists of 3 parts.
 1. A script (`gpu-pt-check.sh`) that automatically checks to what extend a computer is compatible with GPU pass-through in its given configuration.
 2. A script (`setup.sh`) that automatically installs and configures your system for GPU pass-through (Only tested on fresh installs of Fedora 28 x64 with Gnome, booted in UEFI mode!)
 3. Instructions on how to create a bootable Linux USB stick that automatically runs the `gpu-pt-check.sh` script when you boot from it without any user interaction required.
+Update: There now is an additional script that installs Bumblebee and the Nvidia proprietary driver. (Doesn't appear to work properly yet.)
 
 This project has primarely be created to check notebooks. It will probably also work on desktop computers, but checking how and if the conenction between the GPU and the display is MUXED (and if so how) wouldn't make much sense on a desktop computer.
 
