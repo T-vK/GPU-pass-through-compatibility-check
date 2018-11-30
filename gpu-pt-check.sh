@@ -2,14 +2,16 @@
 DIR=$(cd "$(dirname "$0")"; pwd)
 
 # Enable these to mock the lshw output and iommu groups of other computers for testing purposes
-MOCK_SET=5
-LSHW_MOCK="$DIR/mock-data/$MOCK_SET-lshw"
-LSIOMMU_MOCK="$DIR/mock-data/$MOCK_SET-lsiommu"
+#MOCK_SET=5
+#LSHW_MOCK="$DIR/mock-data/$MOCK_SET-lshw"
+#LSIOMMU_MOCK="$DIR/mock-data/$MOCK_SET-lsiommu"
 
 if [ -z ${LSIOMMU_MOCK+x} ]; then
     IOMMU_GROUPS=$("$DIR/lsiommu.sh")
+    MOCK_MODE=false
 else
     IOMMU_GROUPS=$(cat "$LSIOMMU_MOCK")
+    MOCK_MODE=true
 fi
 
 if [ -z ${LSHW_MOCK+x} ]; then
@@ -44,7 +46,7 @@ function log_white() {
     echo -e "$@"
 }
 
-if [ -n ${MOCK_SET+x} ]; then
+if [ "$MOCK_MODE" = true ]; then
     log_red "[Warning] Using mock data! The following output has nothing to do with this system!"
 fi
 
@@ -210,7 +212,8 @@ fi
 #echo "Listing GPU info with lshw..."
 #sudo lshw -class display
 
-if [ -n ${MOCK_SET+x} ]; then
+#if [ -n ${MOCK_SET+x} ]; then
+if [ "$MOCK_MODE" = true ]; then
     log_red "[Warning] Remember, the above output has been generated using the given mock data and has nothing to do with this system!"
 else
     $SHELL # This is just to keep the shell running when the script is automatically executed on startup.
